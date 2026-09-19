@@ -14,7 +14,7 @@ const IndicatorNotification = GObject.registerClass(
         _init() {
             super._init({
                 style_class: 'osd-window capsnum-notification',
-                vertical: false,
+                orientation: Clutter.Orientation.HORIZONTAL,
                 opacity: 0,
                 visible: false
             });
@@ -117,7 +117,7 @@ const Indicator = GObject.registerClass(
 
             this.add_child(this._box);
 
-            this._seat = Clutter.get_default_backend().get_default_seat();
+            this._seat = global.stage.context.get_backend().get_default_seat();
             this._keymap = this._seat.get_keymap();
 
             // Disable the click menu to make this a passive indicator

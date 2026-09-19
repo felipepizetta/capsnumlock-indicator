@@ -15,6 +15,9 @@ A lightweight and native GNOME Shell extension that displays the current status 
 - GNOME 45
 - GNOME 46
 - GNOME 47
+- GNOME 48
+- GNOME 49
+- GNOME 50
 
 *Supports both X11 and Wayland sessions.*
 

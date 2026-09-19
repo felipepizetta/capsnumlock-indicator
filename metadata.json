@@ -5,7 +5,10 @@
   "shell-version": [
     "45",
     "46",
-    "47"
+    "47",
+    "48",
+    "49",
+    "50"
   ],
   "settings-schema": "org.gnome.shell.extensions.capsnum-indicator",
   "url": ""
