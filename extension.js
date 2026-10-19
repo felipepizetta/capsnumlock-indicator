@@ -14,7 +14,7 @@ const IndicatorNotification = GObject.registerClass(
         _init() {
             super._init({
                 style_class: 'osd-window capsnum-notification',
-                orientation: Clutter.Orientation.HORIZONTAL,
+                vertical: false,
                 opacity: 0,
                 visible: false
             });
@@ -72,6 +72,10 @@ const IndicatorNotification = GObject.registerClass(
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     onComplete: () => {
                         // Wait 1.5 seconds then fade out
+                        if (this._timeoutId) {
+                            GLib.source_remove(this._timeoutId);
+                            this._timeoutId = 0;
+                        }
                         this._timeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1500, () => {
                             this._timeoutId = 0;
                             this.ease({
@@ -117,8 +121,11 @@ const Indicator = GObject.registerClass(
 
             this.add_child(this._box);
 
-            this._seat = global.stage.context.get_backend().get_default_seat();
+            this._seat = Clutter.get_default_backend().get_default_seat();
             this._keymap = this._seat.get_keymap();
+
+            this._vdev = this._seat.create_virtual_device(Clutter.InputDeviceType.KEYBOARD_DEVICE);
+            this._numLockTimeoutId = 0;
 
             // Disable the click menu to make this a passive indicator
             this.reactive = false;
@@ -158,6 +165,24 @@ const Indicator = GObject.registerClass(
             this._setupWidgets();
             this._syncState();
         }
+        _autoEnableNumLock() {
+            if (this._numLockTimeoutId || !this._vdev)
+                return;
+
+            // Trì hoãn một chút để không bấm phím ngay trong handler của tín hiệu
+            this._numLockTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 150, () => {
+                this._numLockTimeoutId = 0;
+
+                if (this._settings.get_boolean('auto-numlock') &&
+                    !this._keymap.get_num_lock_state()) {
+                    this._vdev.notify_keyval(GLib.get_monotonic_time(),
+                        Clutter.KEY_Num_Lock, Clutter.KeyState.PRESSED);
+                    this._vdev.notify_keyval(GLib.get_monotonic_time(),
+                        Clutter.KEY_Num_Lock, Clutter.KeyState.RELEASED);
+                }
+                return GLib.SOURCE_REMOVE;
+            });
+        }
 
         _syncState() {
             let capsState = this._keymap.get_caps_lock_state();
@@ -165,6 +190,9 @@ const Indicator = GObject.registerClass(
             let showCaps = this._settings.get_boolean('show-caps-lock');
             let showNum = this._settings.get_boolean('show-num-lock');
             let hideWhenOff = this._settings.get_boolean('hide-when-off');
+
+            if (!numState && this._settings.get_boolean('auto-numlock'))
+                this._autoEnableNumLock();
 
 
 
@@ -284,6 +312,11 @@ const Indicator = GObject.registerClass(
                 this._customNotification.destroy();
                 this._customNotification = null;
             }
+            if (this._numLockTimeoutId) {
+                GLib.source_remove(this._numLockTimeoutId);
+                this._numLockTimeoutId = 0;
+            }
+            this._vdev = null;
             super.destroy();
         }
     });

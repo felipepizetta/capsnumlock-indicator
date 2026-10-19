@@ -12,7 +12,7 @@ export default class IndicatorPreferences extends ExtensionPreferences {
         });
         page.add(group);
 
-        const settings = this.getSettings('org.gnome.shell.extensions.capsnum-indicator');
+        const settings = this.getSettings();
 
         // Safest approach across Adw versions: ActionRow + Gtk.Switch
         const createSwitchRow = (title, subtitle, key) => {
@@ -50,6 +50,11 @@ export default class IndicatorPreferences extends ExtensionPreferences {
             _('Show notifications'),
             _('Display a system notification when Caps/Num Lock is toggled.'),
             'show-notifications'
+        ));
+        group.add(createSwitchRow(
+            _('Auto enable Num Lock'),
+            _('Automatically turn Num Lock back on when it is turned off.'),
+            'auto-numlock'
         ));
 
         window.add(page);

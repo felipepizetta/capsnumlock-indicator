@@ -9,6 +9,7 @@ A lightweight and native GNOME Shell extension that displays the current status 
 - **Customizable Appearance**: Choose between sleek system lock icons or classic "A" and "1" text labels.
 - **Smart Hiding**: Option to completely hide the indicator when the locks are disabled to keep your top bar clean.
 - **System Notifications**: Get a native GNOME notification bubble whenever a lock state changes.
+- **Auto enable numlock**: Automatically turn Num Lock back on when it is turned off.
 
 ## Compatibility
 

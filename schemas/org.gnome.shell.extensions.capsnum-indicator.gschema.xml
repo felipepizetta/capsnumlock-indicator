@@ -21,5 +21,10 @@
       <summary>Show toggle notifications</summary>
       <description>Display a system notification when Caps or Num Lock state changes.</description>
     </key>
+    <key name="auto-numlock" type="b">
+      <default>false</default>
+      <summary>Auto enable Num Lock</summary>
+      <description>Automatically turn Num Lock back on when it is turned off.</description>
+    </key>
   </schema>
 </schemalist>
